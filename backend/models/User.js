@@ -1,133 +1,96 @@
-const { DataTypes, Model } = require('sequelize');
-const bcrypt = require('bcryptjs');
-const { sequelize } = require('../config/database');
+const mongoose = require('mongoose');
 
-class User extends Model {
-  async validatePassword(plainPassword) {
-    return bcrypt.compare(plainPassword, this.password_hash);
-  }
-
-  toSafeJSON() {
-    const obj = this.toJSON();
-    delete obj.password_hash;
-    delete obj.otp_code;
-    delete obj.otp_expires;
-    delete obj.refresh_token;
-    return obj;
-  }
-}
-
-User.init({
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true,
-  },
-  phone: {
-    type: DataTypes.STRING(20),
-    allowNull: true,
-    unique: true,
-    validate: { is: /^\+[1-9]\d{6,14}$/ },
-  },
+const UserSchema = new mongoose.Schema({
   email: {
-    type: DataTypes.STRING(255),
-    allowNull: true,
+    type: String,
     unique: true,
-    validate: { isEmail: true },
+    sparse: true,
+    lowercase: true,
+    trim: true,
   },
-  password_hash: {
-    type: DataTypes.STRING(255),
-    allowNull: true,
+  apple_id: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
+  google_id: {
+    type: String,
+    unique: true,
+    sparse: true,
   },
   first_name: {
-    type: DataTypes.STRING(100),
-    allowNull: true,
-    validate: { len: [2, 100] },
+    type: String,
+    trim: true,
   },
   last_name: {
-    type: DataTypes.STRING(100),
-    allowNull: true,
+    type: String,
+    trim: true,
   },
   date_of_birth: {
-    type: DataTypes.DATEONLY,
-    allowNull: true,
+    type: Date,
   },
   gender: {
-    type: DataTypes.ENUM('male', 'female', 'other'),
-    allowNull: true,
+    type: String,
+    enum: ['male', 'female', 'other'],
   },
   looking_for: {
-    type: DataTypes.ENUM('male', 'female', 'any'),
-    defaultValue: 'any',
+    type: String,
+    enum: ['male', 'female', 'any'],
+    default: 'any',
   },
   // Location
-  country: { type: DataTypes.STRING(100) },
-  state: { type: DataTypes.STRING(100) },
-  city: { type: DataTypes.STRING(100) },
-  latitude: { type: DataTypes.DECIMAL(10, 7) },
-  longitude: { type: DataTypes.DECIMAL(10, 7) },
+  country: String,
+  state: String,
+  city: String,
+  location: {
+    type: { type: String, enum: ['Point'], default: 'Point' },
+    coordinates: { type: [Number], default: [0, 0] }, // [longitude, latitude]
+  },
   // Profile photo
-  profile_photo_url: { type: DataTypes.TEXT },
+  profile_photo_url: String,
   photos: {
-    type: DataTypes.JSONB,
-    defaultValue: [],
+    type: [String],
+    default: [],
   },
   // Account status
-  is_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
-  is_active: { type: DataTypes.BOOLEAN, defaultValue: true },
-  is_banned: { type: DataTypes.BOOLEAN, defaultValue: false },
-  is_admin: { type: DataTypes.BOOLEAN, defaultValue: false },
-  ban_reason: { type: DataTypes.TEXT },
+  is_verified: { type: Boolean, default: false },
+  is_active: { type: Boolean, default: true },
+  is_banned: { type: Boolean, default: false },
+  is_admin: { type: Boolean, default: false },
+  ban_reason: String,
   // Verification
-  phone_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
-  email_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
-  id_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
-  selfie_verified: { type: DataTypes.BOOLEAN, defaultValue: false },
-  // Auth tokens
-  otp_code: { type: DataTypes.STRING(6) },
-  otp_expires: { type: DataTypes.DATE },
-  refresh_token: { type: DataTypes.TEXT },
-  // OAuth
-  google_id: { type: DataTypes.STRING(255) },
-  apple_id: { type: DataTypes.STRING(255) },
+  email_verified: { type: Boolean, default: false },
+  id_verified: { type: Boolean, default: false },
+  selfie_verified: { type: Boolean, default: false },
   // Premium
   premium_tier: {
-    type: DataTypes.ENUM('free', 'silver', 'gold', 'platinum'),
-    defaultValue: 'free',
+    type: String,
+    enum: ['free', 'silver', 'gold', 'platinum'],
+    default: 'free',
   },
-  premium_expires: { type: DataTypes.DATE },
-  coins: { type: DataTypes.INTEGER, defaultValue: 0 },
+  premium_expires: Date,
+  coins: { type: Number, default: 0 },
   // Stats
-  profile_completeness: { type: DataTypes.INTEGER, defaultValue: 0 },
-  last_active: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+  profile_completeness: { type: Number, default: 0 },
+  last_active: { type: Date, default: Date.now },
   // Push notification token
-  push_token: { type: DataTypes.TEXT },
+  push_token: String,
   // Privacy
-  show_online_status: { type: DataTypes.BOOLEAN, defaultValue: true },
-  incognito_mode: { type: DataTypes.BOOLEAN, defaultValue: false },
+  show_online_status: { type: Boolean, default: true },
+  incognito_mode: { type: Boolean, default: false },
 }, {
-  sequelize,
-  modelName: 'User',
-  tableName: 'users',
-  hooks: {
-    beforeCreate: async (user) => {
-      if (user.password_hash) {
-        user.password_hash = await bcrypt.hash(user.password_hash, 12);
-      }
-    },
-    beforeUpdate: async (user) => {
-      if (user.changed('password_hash') && user.password_hash) {
-        user.password_hash = await bcrypt.hash(user.password_hash, 12);
-      }
-    },
-  },
-  indexes: [
-    { fields: ['phone'] },
-    { fields: ['email'] },
-    { fields: ['country', 'state', 'city'] },
-    { fields: ['gender', 'is_active', 'is_banned'] },
-    { fields: ['premium_tier'] },
-  ],
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  toJSON: {
+    transform: function (doc, ret) {
+      delete ret.__v;
+      return ret;
+    }
+  }
 });
+
+// Create a geospatial index
+UserSchema.index({ location: '2dsphere' });
+
+const User = mongoose.model('User', UserSchema);
 
 module.exports = User;

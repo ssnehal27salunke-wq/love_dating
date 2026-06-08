@@ -5,7 +5,7 @@ const BASE_URL = 'https://lovemarriage-api.onrender.com/api';
 
 export const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 10000,
+  timeout: 35000, // 35s — handles Render free tier cold start (~15-30s)
   headers: {
     'Content-Type': 'application/json',
   },

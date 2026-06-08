@@ -8,10 +8,10 @@ import { AuthProvider, useAuth } from './hooks/useAuth';
 
 // Screens
 import WelcomeScreen from './screens/WelcomeScreen';
-import EmailScreen from './screens/EmailScreen';
-import OtpScreen from './screens/OtpScreen';
 import HomeScreen from './screens/HomeScreen';
+import NameDobScreen from './screens/Onboarding/NameDobScreen';
 import PhotoUploadScreen from './screens/Onboarding/PhotoUploadScreen';
+import PaywallScreen from './screens/PaywallScreen';
 import BioEducationScreen from './screens/Onboarding/BioEducationScreen';
 import ReligionLifestyleScreen from './screens/Onboarding/ReligionLifestyleScreen';
 import PartnerPreferencesScreen from './screens/Onboarding/PartnerPreferencesScreen';
@@ -43,8 +43,6 @@ function RootNavigator() {
         // Auth Stack
         <>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
-          <Stack.Screen name="Email" component={EmailScreen} />
-          <Stack.Screen name="Otp" component={OtpScreen} />
         </>
       ) : isProfileIncomplete ? (
         // Onboarding Stack
@@ -58,7 +56,12 @@ function RootNavigator() {
       ) : (
         // Main App Stack
         <>
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Group>
+            <Stack.Screen name="Home" component={HomeScreen} />
+          </Stack.Group>
+          <Stack.Group screenOptions={{ presentation: 'modal' }}>
+            <Stack.Screen name="Paywall" component={PaywallScreen} />
+          </Stack.Group>
         </>
       )}
     </Stack.Navigator>
