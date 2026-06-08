@@ -1,29 +1,46 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "LoveMarriage",
+    "slug": "lovemarriage",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.ssnehalsalunke.mobile"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.lovemarriage.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "LoveMarriage uses your camera to take profile photos.",
+        "NSPhotoLibraryUsageDescription": "LoveMarriage needs access to your photos to set your profile photo.",
+        "NSPhotoLibraryAddUsageDescription": "LoveMarriage would like to save photos to your library."
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#000000",
+        "foregroundImage": "./assets/android-icon-foreground.png"
       },
-      "predictiveBackGestureEnabled": false
+      "package": "com.lovemarriage.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-secure-store"
-    ]
+      "expo-secure-store",
+      "expo-image-picker",
+      [
+        "expo-apple-authentication"
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+      }
+    }
   }
 }
