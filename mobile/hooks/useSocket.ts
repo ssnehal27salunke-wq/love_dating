@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './useAuth';
 
-const SOCKET_URL = 'http://192.168.2.4:3000';
+const SOCKET_URL = 'https://lovemarriage-api.onrender.com';
 
 export function useSocket() {
   const { token } = useAuth();

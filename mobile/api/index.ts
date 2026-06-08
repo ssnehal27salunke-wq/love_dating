@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-const BASE_URL = 'http://192.168.2.4:3000/api';
+const BASE_URL = 'https://lovemarriage-api.onrender.com/api';
 
 export const api = axios.create({
   baseURL: BASE_URL,
