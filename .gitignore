@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+.npm
+
+# Secrets — NEVER COMMIT THESE
+backend/.env
+backend/.env.local
+backend/.env.production
+
+# Expo / React Native
+mobile/.expo/
+mobile/dist/
+mobile/android/
+mobile/ios/
+mobile/*.jks
+mobile/*.p8
+mobile/*.p12
+mobile/*.key
+mobile/*.mobileprovision
+mobile/*.orig.*
+mobile/web-build/
+
+# Build artifacts
+*.log
+*.tsbuildinfo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# OS
+Thumbs.db
+
+# EAS
+.eas/
+credentials.json
