@@ -45,7 +45,10 @@ router.post('/send-otp', [
     const otpKey = `otp:login:${email}`;
     await setCache(otpKey, otp, 600); // 10 min TTL
 
-    await sendOTPEmail(email, otp);
+    // Fire-and-forget — email delivery is best-effort, OTP is stored regardless
+    sendOTPEmail(email, otp).catch((err) =>
+      logger.error('Background OTP email error:', err.message)
+    );
 
     res.json({ message: 'OTP sent successfully' });
   } catch (err) {
